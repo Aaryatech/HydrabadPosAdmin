@@ -47,28 +47,10 @@
 				</ul>
 			</div>
 			<!-- END Breadcrumb -->
-			<form action="${pageContext.request.contextPath}/searchOrdersCount"
+			<form action="${pageContext.request.contextPath}/getFrTotalSales"
 				method="post" id="validation-form">
 				<div class="container" id="main-container">
-					<div class="row">
-						<div class="col-md-1">
-							<div class="col1title">Prod Date:</div>
-						</div>
-						<div class="col-md-2">
-							<input class="form-control" placeholder="Date"
-								name="from_datepicker" style="border-radius: 25px;"
-								id="from_datepicker" type="date" format="dd-mm-yyyy"
-								value="${cDate}" />
-						</div>
-						<div class="col-md-4">
-							<input type="submit" name="submit" id="submit"
-								value="Search By Prod Date" class="btn btn-primary" /> <input
-								type="submit" name="submit1" id="submit1"
-								value="Search Pending For Bill" class="btn btn-primary" />
-
-
-						</div>
-					</div>
+					
 					<div class="form-group"></div>
 					<div class="row">
 						<div class="col-md-1">
@@ -76,41 +58,16 @@
 						</div>
 						<div class="col-md-2">
 							<input class="form-control datepicker22  date-picker"
-								placeholder="Date" name="from_date" style="border-radius: 25px;"
-								id="from_date" type="text" value="${fromDate}" />
+								placeholder="From Date" name="from_date" style="border-radius: 25px;"
+								id="from_date" type="text" value="${cDate}" />
 						</div>
 						<div class="col-md-1">
 							<div class="col1title">To Date:</div>
 						</div>
 						<div class="col-md-2">
 							<input class="form-control datepicker22  date-picker"
-								placeholder="Date" name="to_date" style="border-radius: 25px;"
-								id="to_date" type="text" value="${toDate }" />
-						</div>
-
-
-						<div class="col-md-3">
-
-							<select data-placeholder="Choose Franchisee"
-								class="form-control chosen"  tabindex="6"
-								id="selectFr" name="selectFr">
-								<option selected value="-1"><c:out value="All" /></option>
-
-								<c:forEach items="${frList}" var="fr" varStatus="count">
-								<c:choose>
-								
-									<c:when test="${fr.frId==frId}">
-										<option selected value="${fr.frId}"><c:out
-												value="${fr.frName}" /></option>
-									</c:when>
-									<c:otherwise>
-										<option value="${fr.frId}"><c:out
-												value="${fr.frName}" /></option>
-									</c:otherwise>
-									</c:choose>
-								</c:forEach>
-							</select>
-
+								placeholder="To Date" name="to_date" style="border-radius: 25px;"
+								id="to_date" type="text" value="${cDate }" />
 						</div>
 
 						<div class="col-md-1">
@@ -128,47 +85,39 @@
 				<div class="col-md-12">
 					<div class="row">
 
-						<c:forEach items="${orderCounts}" var="orderCounts">
+						<c:forEach items="${frSaleList}" var="frData">
 							<!-- <a href="resoucres/index.php/orders/list_all"> -->
+							<a href="${pageContext.request.contextPath}/showproduction/frId">
 							<div class="col-md-3">
 								<div class="tile tile-orange">
-									<div class="img">
+									<!-- <div class="img">
 										<i class="fa fa-shopping-cart fa-5x"></i>
-									</div>
-									<div class="content">
+									</div> -->
+									
+									<div class="content">									
 										<p class="medium" style="font-size: 20px;">
-											<c:out value="${orderCounts.total}"></c:out>
+											<c:out value="${frData.frName}"></c:out>
 										</p>
+										
 										<p class="title">
-											<c:out value="${orderCounts.menuTitle}"></c:out>
+											<c:out value="${frData.grandTotal}"></c:out>
 										</p>
-										<%--  
-										 <a href="showOrders/${orderCounts.menuId}"><span
-														class="glyphicon glyphicon-list" title="Order List" style="color:white;"></span></a>
-														 <a href="showproduction/${orderCounts.menuId}"><span
-														class="glyphicon glyphicon-list" title="Add Order to Production"   style="color:white;"></span></a> --%>
-
-
-										<a
-											href="${pageContext.request.contextPath}/showOrders/${orderCounts.menuId}">
-											<button type="button" style="margin-bottom: 35px;"
-												class="btn">Order List</button>
-										</a> <a
-											href="${pageContext.request.contextPath}/showproduction/${orderCounts.menuId}">
+										
+										<%-- <a
+											href="${pageContext.request.contextPath}/showproduction/frId">
 											<button type="button" style="margin-bottom: 35px;"
 												class="btn">Add Order to Prod</button>
-										</a>
-
+										</a>  --%>
 									</div>
 								</div>
 
-							</div>
+							</div></a>
 
 
 						</c:forEach>
 
 						<div class="clearfix"></div>
-						<form method="post" id="modal-dialog_form1">
+						<%-- <form method="post" id="modal-dialog_form1">
 							<input type="hidden" id="ordHeaderIdForDel"
 								name="ordHeaderIdForDel" value="0">
 							
@@ -207,7 +156,7 @@
 
 
 
-											<c:forEach items="${advList}" var="advList" varStatus="count">
+											<c:forEach items="${frSaleList}" var="advList" varStatus="count">
 
 												<tr>
 													<td class="col-sm-1"><c:out value="${count.index+1}" /></td>
@@ -264,7 +213,7 @@
 								</div>
 
 							</div>
-						</form>
+						</form> --%>
 
 
 					</div>
@@ -275,7 +224,7 @@
 
 
 			<footer>
-			<p>2019 © MADHAVI.</p>
+			<p>2020 © Mumbai Cafe.</p>
 			</footer>
 
 			<a id="btn-scrollup" class="btn btn-circle btn-lg" href="#"><i

@@ -101,7 +101,7 @@
 
 			<!-- BEGIN Navlist -->
 			<a class="navbar-brand" href="#"
-				style=" text-align: center; padding: 0px 0px; "> <img
+				style=" text-align: center; padding: 10px 0px; "> <img
 				src="${pageContext.request.contextPath}/resources/img/poslogo1.PNG"
 				style="position: relative;" alt="">
 			</a>
