@@ -19,6 +19,7 @@
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/vendor/daterangepicker/daterangepicker.css">
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/util.css">
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/main.css">
+	<link rel="shortcut icon" href="${pageContext.request.contextPath}/resources/img/cafelogo.PNG">
 <style type="text/css">
 .bg-overlay {
    	background: url("${pageContext.request.contextPath}/resources/img/bgPicture.jpg");
@@ -40,7 +41,7 @@
 				<form class="login100-form validate-form" id="form-login" action="loginProcess" method="post">
 				
 					<span class="login100-form-title p-b-33">
-				<!-- <img src="/adminpanel/resources/img/Madhvi_Logo(4).jpg"></img> -->Admin Login
+				<!-- <img src="/adminpanel/resources/img/Madhvi_Logo(4).jpg"></img> -->
 					</span>
 
 					<div class="wrap-input100 validate-input" data-validate = "Valid username is required" style="border-radius:25px;">
