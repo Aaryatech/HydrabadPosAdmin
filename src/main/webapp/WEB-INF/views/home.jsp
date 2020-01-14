@@ -5,8 +5,9 @@
 <html>
 <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
 <c:url var="getAdvaceOrderDetail" value="/getAdvaceOrderDetail" />
+<c:url var="getFrTotalSalesJson" value="/getFrTotalSalesJson" /> 
 
-<body>
+<body onload="drawAllCharts()">
 	<jsp:include page="/WEB-INF/views/include/logout.jsp"></jsp:include>
 	<!-- BEGIN Container -->
 
@@ -47,7 +48,7 @@
 				</ul>
 			</div>
 			<!-- END Breadcrumb -->
-			<form action="${pageContext.request.contextPath}/getFrTotalSales"
+			<form action="${pageContext.request.contextPath}/home"
 				method="post" id="validation-form">
 				<div class="container" id="main-container">
 					
@@ -59,7 +60,7 @@
 						<div class="col-md-2">
 							<input class="form-control datepicker22  date-picker"
 								placeholder="From Date" name="from_date" style="border-radius: 25px;"
-								id="from_date" type="text" value="${cDate}" />
+								id="from_date" type="text" value="${fromDate}" />
 						</div>
 						<div class="col-md-1">
 							<div class="col1title">To Date:</div>
@@ -67,7 +68,7 @@
 						<div class="col-md-2">
 							<input class="form-control datepicker22  date-picker"
 								placeholder="To Date" name="to_date" style="border-radius: 25px;"
-								id="to_date" type="text" value="${cDate }" />
+								id="to_date" type="text" value="${toDate }" />
 						</div>
 
 						<div class="col-md-1">
@@ -112,7 +113,6 @@
 								</div>
 
 							</div></a>
-
 
 						</c:forEach>
 
@@ -214,13 +214,57 @@
 
 							</div>
 						</form> --%>
-
-
 					</div>
-
-
 				</div>
-			</div>
+
+					<div class="col-md-12">
+						<div class="row">
+						
+								<div class="charts_bx">
+									<div class="chart_l">
+										<div id="donutchart" style="width: 100%; height: 400px;" ></div>
+									
+									</div>
+									<div class="clearfix"></div>
+								</div>
+							<!-- </div> -->
+							<!-- <div class="col-md-6"> -->
+								<div class="charts_bx">
+									<div class="chart_l">
+
+										<div class="a"></div>
+
+										<div id="chart_div" style="width: 100%; height: 400px;"></div>
+										<!-- style="width: 900px; height: 500px;" -->
+
+
+									</div>
+
+									<div class="clearfix"></div>
+
+
+								</div> 
+							<!-- </div> -->
+
+						</div>
+					</div>
+					
+					<div class="col-md-12">
+						<div class="row">
+								<div class="charts_bx">
+									<div class="chart_l">
+
+										<div class="a"></div>
+
+										<div id="chart_div" style="width: 100%; height: 300px;"></div>
+										<!-- style="width: 900px; height: 500px;" -->
+									</div>
+									<div class="clearfix"></div>
+
+								</div> 
+						</div>
+					</div>
+				</div>
 
 
 			<footer>
@@ -357,13 +401,15 @@
 					<!--/.Content-->
 				</div>
 			</div>
-		</form>
 	</div>
 	<style>
 .datepicker {
 	z-index: 999999;
 }
 </style>
+<script type="text/javascript"
+		src="https://www.gstatic.com/charts/loader.js"></script>
+
 	<script
 		src="${pageContext.request.contextPath}/resources/js/jquery.min.js"></script>
 	<script
@@ -605,7 +651,186 @@
 			
 			}) */
 	</script>
+<script type="text/javascript">
+	 	function drawAllCharts() {
 
+			google.charts.load("current", {
+				packages : [ "corechart" ]
+			});
+			google.charts.setOnLoadCallback(drawDonutChart);
+
+			google.charts.load('current', {
+				'packages' : [ 'corechart', 'bar' ]
+			});
+			google.charts.setOnLoadCallback(drawStuff);
+			
+			
+			//var type=${type};
+			
+			/* if (type == 4) {
+				document.getElementById("ihide").style = "visible"
+				document.getElementById("fromdatepicker").required = true;
+				document.getElementById("todatepicker").required = true;
+			} else {
+				document.getElementById("ihide").style = "display:none"
+				document.getElementById("fromdatepicker").required = false;
+				document.getElementById("todatepicker").required = false;
+			} */
+			
+		} 
+		
+		function drawDonutChart() {			
+			//to draw donut chart
+			var chart;
+			var datag = '';
+			var fromDate = document.getElementById("from_date").value;
+			var toDate = document.getElementById("to_date").value;
+			var a = "";
+			var dataSale = [];
+			var Header = [ 'Franchisee', 'Amount', 'ID' ];
+			dataSale.push(Header);
+			$.get('${getFrTotalSalesJson}', {
+				fromDate : fromDate,
+				toDate : toDate,
+				ajax : 'true'
+			}, function(chartsdata) {	
+				if(chartsdata == ""){
+					alert("No records found !!");
+				}else{
+				
+				//alert(JSON.stringify(chartsdata));
+				var len = chartsdata.length;
+			datag = datag + '[';
+			 $.each(chartsdata, function(key, chartsdata) {
+					var temp = [];
+					temp.push(chartsdata.frName + " ("
+							+ (parseFloat(chartsdata.grandTotal).toFixed(2))
+							+ ")", (parseFloat(chartsdata.grandTotal)),
+							parseInt(chartsdata.frId));
+					dataSale.push(temp);
+
+				}); 
+
+				//console.log(dataSale);
+				var data1 = google.visualization.arrayToDataTable(dataSale);
+
+				var options = {
+					title : 'Franchisee Sell(%)',
+					pieHole : 0.4,
+					backgroundColor : 'transparent',
+					pieSliceText : 'none',
+					sliceVisibilityThreshold : 0,
+					/*  legend: {
+					        position: 'labeled',
+					        labeledValueText: 'both',
+					        textStyle: {
+					            color: 'red', 
+					            fontSize: 10
+					        }
+					    }, */
+					is3D : true,
+				};
+				//  alert(222);
+				chart = new google.visualization.PieChart(document
+						.getElementById('donutchart'));
+
+				function selectQtyHandler() {
+					// alert("hii");
+					var selectedItem = chart.getSelection()[0];
+					if (selectedItem) {
+						// alert("hii selectedItem");
+						i = selectedItem.row, 0;
+
+						//alert("hii selectedItem" + chartsdata[i].catId);
+						itemSellBillCal(chartsdata[i].catId);
+
+					}
+				}
+
+				google.visualization.events.addListener(chart, 'select',
+						selectQtyHandler);
+				chart.draw(data1, options);
+			}//else end
+			});
+
+		}
+		
+		function drawStuff() {
+			var fromDate = document.getElementById("from_date").value;
+			var toDate = document.getElementById("to_date").value;
+			var chartDiv = document.getElementById('chart_div');
+			//document.getElementById("chart_div").style.border = "thin dotted red";
+			var dataTable = new google.visualization.DataTable();
+			
+			dataTable.addColumn('string', 'Franchisees'); // Implicit data column.
+			dataTable.addColumn('number', 'Amount'); // Implicit domain column.
+
+			$.get('${getFrTotalSalesJson}', {
+				fromDate : fromDate,
+				toDate : toDate,
+				ajax : 'true'
+			}, function(chartsBardata) {
+
+				if(chartsBardata == ""){
+					alert("No records found !!");
+				}else{
+			//	alert(JSON.stringify(chartsBardata));
+				$.each(chartsBardata, function(key, chartsBardata) {
+
+					dataTable.addRows([ [ chartsBardata.frName,
+						parseInt(chartsBardata.grandTotal)] ]);
+
+				});
+
+				//alert(11);
+
+				var materialOptions = {
+					width : 600,
+					height : 450,
+					chart : {
+						title : 'Sell Amount per Franchisee',
+						subtitle : ' '
+					},
+					series : {
+						0 : {
+							axis : 'distance'
+						}, // Bind series 0 to an axis named 'distance'.
+						1 : {
+							axis : 'brightness'
+						}
+					// Bind series 1 to an axis named 'brightness'.
+					},
+					axes : {
+						y : {
+							distance : {
+								label : 'Sell Amount'
+							}, // Left y-axis.
+							brightness : {
+								side : 'right',
+								label : 'Total Tax'
+							}
+						// Right y-axis.
+						}
+					}
+				};
+
+				var materialChart = new google.charts.Bar(chartDiv);
+
+				function drawMaterialChart() {
+					// var materialChart = new google.charts.Bar(chartDiv);
+					// google.visualization.events.addListener(materialChart, 'select', selectHandler);    
+					materialChart.draw(dataTable, google.charts.Bar
+							.convertOptions(materialOptions));
+					// button.innerText = 'Change to Classic';
+					// button.onclick = drawClassicChart;
+				}
+
+				drawMaterialChart();
+			}
+			});
+
+		}
+	</script>
 
 </body>
 </html>

@@ -109,18 +109,21 @@ public class HomeController {
 		return "index";
 	}
 
-	@RequestMapping(value = "/home", method = RequestMethod.GET)
+	@RequestMapping(value = "/home", method = RequestMethod.POST)
 	public ModelAndView showLogin(HttpServletRequest request, HttpServletResponse response) {
-		logger.info(" /home request mapping.");
+		logger.info(" / home request mapping.");
 
 			ModelAndView mav = new ModelAndView("home");
 		try {
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");	
 			RestTemplate restTemplate = new RestTemplate();
-
-			MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();				
-			map.add("fromDate", dateFormat.format(new Date()));
-			map.add("toDate", dateFormat.format(new Date()));
+			
+			String fromDate = request.getParameter("from_date");
+			String toDate = request.getParameter("to_date");
+						
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+			map.add("fromDate", DateConvertor.convertToYMD(fromDate));
+			map.add("toDate", DateConvertor.convertToYMD(toDate));
 			
 			FranchiseeSalesTotal[] frSaleArr = restTemplate
 					.postForObject(Constants.url + "/getFrTotalSales", map, FranchiseeSalesTotal[].class);
@@ -128,7 +131,8 @@ public class HomeController {
 			List<FranchiseeSalesTotal> frSaleList = new ArrayList<>(Arrays.asList(frSaleArr));
 
 			mav.addObject("frSaleList", frSaleList);
-			mav.addObject("cDate", DateConvertor.convertToDMY(dateFormat.format(new Date())));
+			mav.addObject("fromDate", fromDate);
+			mav.addObject("toDate", toDate);
 		} catch (Exception e) {
 			System.out.println("HomeController Home Request Page Exception:  " + e.getMessage());
 		}
@@ -326,7 +330,8 @@ public class HomeController {
 					System.err.println("Sales------------"+frSaleList);
 					mav.addObject("frSaleList", frSaleList);
 					
-					mav.addObject("cDate", DateConvertor.convertToDMY(dateFormat.format(new Date())));
+					mav.addObject("fromDate", DateConvertor.convertToDMY(dateFormat.format(new Date())));
+					mav.addObject("toDate", DateConvertor.convertToDMY(dateFormat.format(new Date())));
 					
 					try {
 
@@ -405,6 +410,7 @@ public class HomeController {
 	public ModelAndView getFrTotalSales(HttpServletRequest request, HttpServletResponse res) throws IOException {
 		ModelAndView mav = new ModelAndView("home");
 		try {
+		
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			
 			String fromDate = request.getParameter("from_date");
@@ -427,6 +433,35 @@ public class HomeController {
 			System.out.println("HomeController Login API Excep:  " + e.getMessage());
 		}
 		return mav;		
+	}
+	
+	
+	@RequestMapping(value = "/getFrTotalSalesJson", method = RequestMethod.GET)
+	@ResponseBody
+	public List<FranchiseeSalesTotal> getFrTotalSalesJson(HttpServletRequest request, HttpServletResponse res) throws IOException {
+		 List<FranchiseeSalesTotal> list = new ArrayList<FranchiseeSalesTotal>();
+			System.out.println("Ok");
+		 try {
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			
+			String fromDate = request.getParameter("fromDate");
+			String toDate = request.getParameter("toDate");
+			System.out.println("List-----------"+fromDate+" "+toDate);
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+			map.add("fromDate", DateConvertor.convertToYMD(fromDate));
+			map.add("toDate", DateConvertor.convertToYMD(toDate));
+			
+			FranchiseeSalesTotal[] frSaleArr = restTemplate
+					.postForObject(Constants.url + "/getFrTotalSales", map, FranchiseeSalesTotal[].class);
+
+			list = new ArrayList<>(Arrays.asList(frSaleArr));
+		System.out.println("List-----------"+list);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Excep in /getFrTotalSalesJson :  " + e.getMessage());
+		}
+		return list;		
 	}
 
 
