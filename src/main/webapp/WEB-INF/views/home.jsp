@@ -4,7 +4,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
-<c:url var="getAdvaceOrderDetail" value="/getAdvaceOrderDetail" />
+<c:url var="getFrSaleDetails" value="/getFrSaleDetails" />
 <c:url var="getFrTotalSalesJson" value="/getFrTotalSalesJson" /> 
 
 <body onload="drawAllCharts()">
@@ -49,7 +49,7 @@
 			</div>
 			<!-- END Breadcrumb -->
 			<form action="${pageContext.request.contextPath}/home"
-				method="post" id="validation-form">
+				method="get" id="validation-form">
 				<div class="container" id="main-container">
 					
 					<div class="form-group"></div>
@@ -85,34 +85,30 @@
 
 				<div class="col-md-12">
 					<div class="row">
-
 						<c:forEach items="${frSaleList}" var="frData">
-							<!-- <a href="resoucres/index.php/orders/list_all"> -->
-							<a href="${pageContext.request.contextPath}/showproduction/frId">
+						
+						<%-- 	<div onclick="showFrSaleDetails('${frData.frId}')"
+								class="btn btn-default btn-rounded" data-toggle="modal"
+								data-target="#elegantModalForm"> --%>
 							<div class="col-md-3">
 								<div class="tile tile-orange">
 									<!-- <div class="img">
 										<i class="fa fa-shopping-cart fa-5x"></i>
 									</div> -->
 									
-									<div class="content">									
+									<div class="content" onclick="showFrSaleDetails('${frData.frId}','${frData.frName}')"
+									data-toggle="modal" data-target="#elegantModalForm">								
 										<p class="medium" style="font-size: 20px;">
 											<c:out value="${frData.frName}"></c:out>
 										</p>
 										
 										<p class="title">
 											<c:out value="${frData.grandTotal}"></c:out>
-										</p>
-										
-										<%-- <a
-											href="${pageContext.request.contextPath}/showproduction/frId">
-											<button type="button" style="margin-bottom: 35px;"
-												class="btn">Add Order to Prod</button>
-										</a>  --%>
+										</p>										
 									</div>
 								</div>
 
-							</div></a>
+							</div><!-- </div> -->
 
 						</c:forEach>
 
@@ -301,9 +297,15 @@
 				<div class="modal-content form-elegant">
 					<!--Header-->
 					<div class="modal-header text-center">
+					<a href="#" class="close" data-dismiss="modal" aria-label="Close"
+						id="closeHrefModel"> <img style="width: 20px;"
+						src="${pageContext.request.contextPath}/resources/img/close.png"
+						alt="X" class="imageclass" />
+					</a>
+					
 						<h3 class="modal-title w-100 dark-grey-text font-weight-bold my-3"
 							id="myModalLabel" style="color: #ea4973;">
-							<strong>Advance Order Detail List</strong>
+							<strong>Franchisee Sales Detail List</strong>
 						</h3>
 						<%-- <a href="#" class="close" data-dismiss="modal" aria-label="Close"
 						id="closeHrefModel"> <img
@@ -312,21 +314,25 @@
 					</a> --%>
 						<div></div>
 						<div class="modal-body mx-6">
-	<div class="row">
-							<label class="col-sm-2 col-lg-2 control-label"
-								style="color: #e20b31;">Amount :<span id="billAmt"></span></label>
+							<div class="row">
+								<!-- 	<label class="col-sm-2 col-lg-2 control-label"
+									style="color: #e20b31;">Amount :<span id="billAmt"></span></label>
+	
+								<label class="col-sm-2 col-lg-2 control-label"
+									style="color: #e20b31;">Delivery Date :<span
+									id="devDate"></span>
+								</label> -->
 
-							<label class="col-sm-2 col-lg-2 control-label"
-								style="color: #e20b31;">Delivery Date :<span
-								id="devDate"></span>
-							</label> <label class="col-sm-1 col-lg-1 control-label"
-								style="color: #e20b31;"><span id="isMart"></span> </label> <label
-								class="col-sm-2 col-lg-3 control-label" style="color: blue;">Franchise
-								Name:<span id="frName"></span>
-							</label> <label class="col-sm-2 col-lg-3 control-label"
-								style="color: blue;">Customer Name :<span id="custName"></span></label>
+								<label class="col-sm-1 col-lg-1 control-label"
+									style="color: #e20b31;"><span id="isMart"></span> </label> <label
+									class="col-sm-2 col-lg-3 control-label" style="color: blue;">Franchise
+									Name:<span id="frName"></span>
+								</label>
 
-</div>
+								<!-- <label class="col-sm-2 col-lg-3 control-label"
+									style="color: blue;">Customer Name :<span id="custName"></span></label> -->
+							</div>
+
 							<div class="component">
 
 								<table width="80%" id="modeltable" class="table table-advance"
@@ -337,12 +343,12 @@
 
 											<th class="col-sm-1" align="right">Sr No</th>
 											<th class="col-md-2" align="center">Item Name</th>
-											<th class="col-md-1" align="center">Mrp</th>
-											<th class="col-md-1" align="center">Rate</th>
-
-											<th class="col-md-1" align="center">Qty</th>
-											<th class="col-md-1" align="center">Disc %</th>
-											<th class="col-md-1" align="center">Subtotal</th>
+											<th class="col-md-1" align="center">Mrp.</th>
+											<th class="col-md-1" align="center">Qty.</th>
+											<th class="col-md-1" align="center">Taxable Amt.</th>
+											<th class="col-md-1" align="center">Tax Amt.</th>
+											<th class="col-md-1" align="center">Discount</th>
+											<th class="col-md-1" align="center">Total</th>
 
 										</tr>
 									</thead>
@@ -351,57 +357,33 @@
 								</table>
 							</div>
 							<div class="form-group"></div>
-							<div class="row">
-								<label class="col-sm-1 control-label" style="color: blue;" 	>Advance
-									Amt: </label>
-									<div class="col-sm-2">
-									<input type="text" id="advanceAmt" name="advanceAmt" class="form-control"
-									style="width: 70%" value="0"></div>
-								<label class="col-sm-1 control-label" style="color: blue;">Production Date</label>
-								<div class="col-sm-2 controls date_select">
-									<input class="form-control datepicker22  date-picker"
-										id="prod_date" name="prod_date" size="15" type="text" />
-								</div>
-								 <label class="col-sm-1 control-label" style="color: blue;">Delivery Date</label>
-								<div class="col-sm-2 controls date_select">
-									<input class="form-control datepicker22  date-picker"
-										id="deliveryDate" name="deliveryDate" size="25" type="text" />
-								</div>
-								
-								 <label class="col-sm-1 control-label" style="color: blue;">Delivery
-									Time:</label> <!-- <input type="time" id=delTime name="delTime" value="0"> -->
-							<div class="col-sm-2"><input type="text"   id="clockface_1" name="delTime"  data-format="hh:mm A" class="form-control small clockface-open">
-									</div>
-								</div>
-								<div class="form-group"></div>
-								<div   class="col-md-6">
+						<!-- 	<div class="col-md-6">
 								<input type="button" id="saveEditAdvOrderBtn"
 									class="button btn-success" onclick="saveEditAdvOrder()"
-									value="Save/Update"></div>
-									
-<!-- 									<input type="text" id="clockface_1" value="2:30 PM" data-format="hh:mm A" class="form-control small clockface-open">
- -->									
+									value="Save/Update">
+							</div> -->
 
-							</div>
-							<div align="center" id="loader1" style="display: none">
-
-								<span>
-									<h4>
-										<font color="#343690">Loading</font>
-									</h4>
-								</span> <span class="l-1"></span> <span class="l-2"></span> <span
-									class="l-3"></span> <span class="l-4"></span> <span class="l-5"></span>
-								<span class="l-6"></span>
-							</div>
 						</div>
-						<!--Body-->
+						<div align="center" id="loader1" style="display: none">
 
-						<!--Footer-->
+							<span>
+								<h4>
+									<font color="#343690">Loading</font>
+								</h4>
+							</span> <span class="l-1"></span> <span class="l-2"></span> <span
+								class="l-3"></span> <span class="l-4"></span> <span class="l-5"></span>
+							<span class="l-6"></span>
+						</div>
 					</div>
-					<!--/.Content-->
+					<!--Body-->
+
+					<!--Footer-->
 				</div>
+				<!--/.Content-->
 			</div>
+		</form>
 	</div>
+
 	<style>
 .datepicker {
 	z-index: 999999;
@@ -468,46 +450,23 @@
 		src="${pageContext.request.contextPath}/resources/assets/chosen-bootstrap/chosen.jquery.min.js"></script>
 
 	<script type="text/javascript">
-		function showDetailsForCp(headId, frName, custName, amount, isMart,
-				devDate, advanceAmt, prodDate, isBillGenerated,delivTime) {
-
-			$("#billAmt").css("color", "red");
-			$("#devDate").css("color", "red");
-			$("#isMart").css("color", "red");
-			$("#custName").css("color", "red");
-			$("#frName").css("color", "red");
-			var x;
-			if (parseInt(isMart) == 1) {
-				x = "Adv Order";
-			} else {
-				x = "DM Order";
-			}
-
-			document.getElementById("ordHeaderId").value = headId;
-			document.getElementById("isMart").value = isMart;
-			document.getElementById("advanceAmt").value = advanceAmt;
-
-			document.getElementById("billAmt").innerHTML = amount;
-			document.getElementById("devDate").innerHTML = devDate;
-			document.getElementById("isMart").innerHTML = x;
-			document.getElementById("frName").innerHTML = frName;
-			document.getElementById("custName").innerHTML = custName;
-			document.getElementById("deliveryDate").value = devDate;
-			document.getElementById("clockface_1").value=delivTime;
+	function showFrSaleDetails(frId, frName) {
+		//alert("Fr------"+frId+"  "+frName);
+		var fromDate = document.getElementById("from_date").value;
+		var toDate = document.getElementById("to_date").value;
 			$
-					.post(
-							'${getAdvaceOrderDetail}',
+					.get(
+							'${getFrSaleDetails}',
 							{
-								headId : headId,
+								fromDate : fromDate,
+								toDate : toDate,
+								frId : frId,
 								ajax : 'true'
 							},
 							function(data) {
 
 								//alert(JSON.stringify(data));
-								$('#modeltable td').remove();
-								document.getElementById("saveEditAdvOrderBtn").disabled = false;
-								document.getElementById("saveEditAdvOrderBtn").style.display = "block";
-								document.getElementById("prod_date").value = prodDate;
+								$('#modeltable td').remove();								
 								$
 										.each(
 												data,
@@ -515,39 +474,12 @@
 
 													var tot;
 
-													if (parseInt(isMart) == 1) {
-														tot = parseInt(data.orderQty)
-																* parseFloat(data.orderRate);
-													} else {
-														tot = parseInt(data.orderQty)
-																* parseFloat(data.orderMrp);
-													}
-													tot = tot
+													
+													/*tot = tot
 															- (parseFloat(tot)
-																	* parseFloat(data.isPositive) / 100);
+																	* parseFloat(data.isPositive) / 100);*/
 
-													var tr = $('<tr></tr>');
-													var tb_qty = '<input type="number" class="form-control" min="0" max="99999"  style="width: 70% color:red" id="tb_qty'
-															+ data.orderId
-															+ '" name="tb_qty'
-															+ data.orderId
-															+ '" value="'
-															+ data.orderQty
-															+ '">';
-													var disc_per = '<input type="number" class="form-control"  min="0" max="99999" style="width: 70%" id="disc_per'
-															+ data.orderId
-															+ '" name="disc_per'
-															+ data.orderId
-															+ '" value="'
-															+ data.isPositive
-															+ '">';
-													var tb_rate = '<input type="number" class="form-control" min="0" max="99999"  style="width: 70%" id="tb_rate'
-															+ data.orderId
-															+ '" name="tb_rate'
-															+ data.orderId
-															+ '" value="'
-															+ data.orderRate
-															+ '">';
+													var tr = $('<tr></tr>');										
 
 													tr
 															.append($(
@@ -563,43 +495,49 @@
 															.append($(
 																	'<td class="col-md-1" align="left"  ></td>')
 																	.html(
-																			data.orderMrp));
+																			data.mrp));
 													tr
 															.append($(
 																	'<td class="col-md-1" align="left" ></td>')
 																	.html(
-																			tb_rate));
+																			data.qty));
+													tr
+													.append($(
+															'<td class="col-md-1" align="left"></td>')
+															.html(
+																	data.taxableAmt));
 
 													tr
 															.append($(
 																	'<td class="col-md-1" align="left"></td>')
 																	.html(
-																			tb_qty));
+																			data.totalTax));
 													tr
 															.append($(
 																	'<td class="col-md-1" align="left" ></td>')
 																	.html(
-																			disc_per));
+																			data.disc));
+													
 													tr
+													.append($(
+															'<td class="col-md-1" align="left" ></td>')
+															.html(
+																	data.grandTotal));
+													/* tr
 															.append($(
 																	'<td class="col-md-1" align="left" ></td>')
-																	.html(tot));
+																	.html(tot)); */
 
 													$('#modeltable tbody')
 															.append(tr);
-													if (isBillGenerated == 1) {
-														document
-																.getElementById("saveEditAdvOrderBtn").disabled = true;
-														document
-																.getElementById("saveEditAdvOrderBtn").style.display = "none";
-													}
+													
 												});
-
+								document.getElementById("frName").innerHTML=frName;
 							});
 
 		}
 
-		function saveEditAdvOrder() {
+	/* 	function saveEditAdvOrder() {
 			$('#loader1').show();
 			document.getElementById("saveEditAdvOrderBtn").disabled = true;
 			$
@@ -641,7 +579,7 @@
 				})
 			}
 
-		}
+		} */
 		/* $("#submit1").click(function(){
 			
 		var form1=document.getElementById("validation-form");

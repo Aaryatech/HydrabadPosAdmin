@@ -38,6 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.ats.adminpanel.commons.Constants;
 import com.ats.adminpanel.commons.DateConvertor;
 import com.ats.adminpanel.model.AllFrIdNameList;
+import com.ats.adminpanel.model.FranchiseeSalesDetails;
 import com.ats.adminpanel.model.FranchiseeSalesTotal;
 import com.ats.adminpanel.model.Login;
 import com.ats.adminpanel.model.OrderCount;
@@ -109,7 +110,7 @@ public class HomeController {
 		return "index";
 	}
 
-	@RequestMapping(value = "/home", method = RequestMethod.POST)
+	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public ModelAndView showLogin(HttpServletRequest request, HttpServletResponse response) {
 		logger.info(" / home request mapping.");
 
@@ -129,10 +130,10 @@ public class HomeController {
 					.postForObject(Constants.url + "/getFrTotalSales", map, FranchiseeSalesTotal[].class);
 
 			List<FranchiseeSalesTotal> frSaleList = new ArrayList<>(Arrays.asList(frSaleArr));
-
-			mav.addObject("frSaleList", frSaleList);
-			mav.addObject("fromDate", fromDate);
-			mav.addObject("toDate", toDate);
+				mav.addObject("frSaleList", frSaleList);
+				mav.addObject("fromDate", fromDate);
+				mav.addObject("toDate", toDate);				
+				
 		} catch (Exception e) {
 			System.out.println("HomeController Home Request Page Exception:  " + e.getMessage());
 		}
@@ -446,6 +447,12 @@ public class HomeController {
 			
 			String fromDate = request.getParameter("fromDate");
 			String toDate = request.getParameter("toDate");
+			
+			if(fromDate=="" && toDate=="") {
+				fromDate= DateConvertor.convertToDMY(dateFormat.format(new Date()));
+				toDate= DateConvertor.convertToDMY(dateFormat.format(new Date()));				 
+			}
+			
 			System.out.println("List-----------"+fromDate+" "+toDate);
 			MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 			map.add("fromDate", DateConvertor.convertToYMD(fromDate));
@@ -463,6 +470,38 @@ public class HomeController {
 		}
 		return list;		
 	}
+	
+	
+	@RequestMapping(value = "/getFrSaleDetails", method = RequestMethod.GET)
+	@ResponseBody
+	public List<FranchiseeSalesDetails> getFrSaleDetails(HttpServletRequest request, HttpServletResponse res) throws IOException {
+		 List<FranchiseeSalesDetails> list = new ArrayList<FranchiseeSalesDetails>();
+			System.out.println("Ok");
+		 try {
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			
+			int frId = Integer.parseInt(request.getParameter("frId"));
+			String fromDate = request.getParameter("fromDate");
+			String toDate = request.getParameter("toDate");
+			System.out.println("List-----------"+fromDate+" "+toDate);
+			
+			MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+			map.add("frId", frId);
+			map.add("fromDate", DateConvertor.convertToYMD(fromDate));
+			map.add("toDate", DateConvertor.convertToYMD(toDate));
+			
+			FranchiseeSalesDetails[] frSaleArr = restTemplate
+					.postForObject(Constants.url + "/getItemSalesByFrId", map, FranchiseeSalesDetails[].class);
 
+			list = new ArrayList<>(Arrays.asList(frSaleArr));
+		System.out.println("List-----------"+list);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Excep in /getFrSaleDetails :  " + e.getMessage());
+		}
+		return list;		
+	}
 
 }
+
